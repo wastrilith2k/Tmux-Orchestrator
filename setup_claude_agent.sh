@@ -60,7 +60,7 @@ if 'projects' not in config:
 config['projects'][project_path] = {
     "allowedTools": [
         "Bash",
-        "ReadFile", 
+        "ReadFile",
         "WriteFile",
         "KillBash",
         "BashOutput"
@@ -79,34 +79,34 @@ config['projects'][project_path] = {
         "curl": True,
         "wget": True,
         "http": True,
-        
+
         # Node.js Development
         "node": True,
         "npm": True,
         "npx": True,
         "yarn": True,
         "pnpm": True,
-        
+
         # Python Development
         "python": True,
         "python3": True,
         "pip": True,
         "pip3": True,
         "pytest": True,
-        
+
         # Environment Variables
         "PORT": True,
         "NODE_ENV": True,
         "DEBUG": True,
         "API_KEY": True,
-        
+
         # Development Servers
         "serve": True,
         "dev": True,
         "start": True,
         "build": True,
         "test": True,
-        
+
         # File Operations
         "ls": True,
         "cat": True,
@@ -114,24 +114,24 @@ config['projects'][project_path] = {
         "tail": True,
         "grep": True,
         "find": True,
-        
+
         # Git Operations
         "git": True,
-        
+
         # Process Management
         "ps": True,
         "kill": True,
         "killall": True,
-        
+
         # Network/Localhost patterns
         "curl_localhost": True,
         "localhost": True,
-        
+
         # Common port testing
         "curl_3000": True,
         "curl_8080": True,
         "curl_5000": True,
-        
+
         # Development workflows
         "exact_curl_http___localhost_3000_": True,
         "exact_curl_http___localhost_8080_": True,

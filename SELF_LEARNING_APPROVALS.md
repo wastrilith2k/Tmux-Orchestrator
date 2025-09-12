@@ -20,7 +20,7 @@ The Tmux Orchestrator now includes a sophisticated self-learning approval system
 # Learns: "curl" (approves all curl commands)
 ```
 
-#### Environment Variable Learning  
+#### Environment Variable Learning
 ```bash
 # When approving "PORT=8080 node app.js"
 # Learns: "PORT" and "node" (approves both patterns)
@@ -72,15 +72,15 @@ The Tmux Orchestrator now includes a sophisticated self-learning approval system
         "curl": true,
         "node": true,
         "npm": true,
-        
+
         // Environment variables
         "PORT": true,
         "NODE_ENV": true,
-        
+
         // Pattern-specific approvals
         "curl_localhost": true,
         "exact_PORT_8080_node_app_js": true,
-        
+
         // Dynamically learned commands
         "pytest": true,  // Added during runtime
         "docker": true   // Added during runtime
@@ -132,7 +132,7 @@ manager.auto_approve_all_agents()
 ```python
 approval_patterns = [
     "Do you want to proceed?",
-    "❯ 1. Yes", 
+    "❯ 1. Yes",
     "2. Yes, and don't ask again",
     "3. No, and tell Claude what to do differently"
 ]
@@ -154,7 +154,7 @@ patterns = [
 # Add to approved list with different granularities
 project_config['autoApproveCommands'] = {
     base_command: True,           # e.g., "curl": true
-    env_variable: True,           # e.g., "PORT": true  
+    env_variable: True,           # e.g., "PORT": true
     exact_pattern: True,          # e.g., "exact_curl_localhost_3000": true
     host_pattern: True            # e.g., "curl_localhost": true
 }

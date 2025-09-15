@@ -1,0 +1,62 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Hub system monitoring
+  - job_name: 'hub-api'
+    static_configs:
+      - targets: ['api-gateway:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'hub-dashboard'
+    static_configs:
+      - targets: ['admin-dashboard:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Database monitoring
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 60s
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+
+  # System resources
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Project orchestrators (dynamic discovery)
+  - job_name: 'project-orchestrators'
+    dns_sd_configs:
+      - names:
+        - 'project-orchestrator.tmux-orchestrator-bridge'
+        type: 'A'
+        port: 9090
+    relabel_configs:
+      - source_labels: [__meta_dns_name]
+        target_label: __address__
+      - source_labels: [__meta_dns_name]
+        regex: 'project-orchestrator-(.+)\..*'
+        target_label: project_id
+
+  # Grafana
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    metrics_path: '/metrics'

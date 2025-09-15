@@ -1310,144 +1310,1280 @@ health = client.monitoring.get_session_health(session.id)
 
 ---
 
-## Category 9: Containerization & Deployment
+## Category 9: Distributed Containerization & Multi-Project Architecture
 
-### 9.1 Docker Containerization Framework
-**Current State**: Host-dependent installation, manual environment setup
+### 9.1 Hub-and-Spoke Container Architecture
+**Current State**: Monolithic single-project orchestrator with host dependencies
 
 **Problem Analysis**:
 ```
-Current deployment challenges:
-├── Manual dependency installation (tmux, python3, bc, etc.)
-├── Environment-specific path configurations
-├── Host system pollution with orchestrator files
-├── Difficult to scale across multiple machines
-├── No isolation between different orchestrator instances
-└── Complex setup process for new team members
+Current limitations for multi-project scenarios:
+├── Single orchestrator instance handles all projects
+├── Resource conflicts between concurrent projects
+├── No centralized management across projects
+├── Manual dependency installation per host
+├── Difficult project isolation and scaling
+├── No unified monitoring across project teams
+└── Configuration conflicts between different project types
 ```
 
-**Proposed Docker Architecture**:
-```dockerfile
-# Multi-stage Docker approach
+**Proposed Distributed Architecture**:
+```
+Hub-and-Spoke Design:
+┌─────────────────────────────────────────────────────────────┐
+│                    CENTRAL HUB SYSTEM                      │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │ Admin Dashboard │  │ Logging System  │  │ Config Manager  │ │
+│  │ - Project List  │  │ - Centralized   │  │ - Templates     │ │
+│  │ - Resource Mon. │  │ - Aggregation   │  │ - Validation    │ │
+│  │ - Agent Control │  │ - Retention     │  │ - Distribution  │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │ Message Broker  │  │ Metrics DB      │  │ API Gateway     │ │
+│  │ - Redis Pub/Sub │  │ - PostgreSQL    │  │ - Auth/Authz    │ │
+│  │ - Event Routing │  │ - Time Series   │  │ - Load Balancer │ │
+│  │ - Cross-Project │  │ - Analytics     │  │ - Service Mesh  │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                    ┌─────────┼─────────┐
+                    │         │         │
+          ┌─────────▼──┐ ┌────▼────┐ ┌──▼─────────┐
+          │ PROJECT A  │ │PROJECT B│ │ PROJECT C  │
+          │ ORCHESTR.  │ │ORCHESTR.│ │ ORCHESTR.  │
+          │ ┌────────┐ │ │┌───────┐│ │ ┌────────┐ │
+          │ │ Tmux   │ │ ││ Tmux  ││ │ │ Tmux   │ │
+          │ │ Claude │ │ ││ Claude││ │ │ Claude │ │
+          │ │ Agents │ │ ││ Agents││ │ │ Agents │ │
+          │ └────────┘ │ │└───────┘│ │ └────────┘ │
+          └────────────┘ └─────────┘ └────────────┘
+```
+
+**Container Structure**:
+```
 tmux-orchestrator/
-├── Dockerfile.base           # Base image with dependencies
-├── Dockerfile.orchestrator   # Main orchestrator container
-├── Dockerfile.dashboard      # Dashboard web interface
-├── docker-compose.yml        # Multi-container orchestration
-└── kubernetes/              # K8s deployment manifests
-    ├── orchestrator-deployment.yaml
-    ├── dashboard-service.yaml
-    └── persistent-volume.yaml
+├── admin-system/                    # Central Hub
+│   ├── docker-compose.admin.yml     # Admin services
+│   ├── dashboard/                   # Web interface
+│   ├── logging/                     # Centralized logging
+│   ├── database/                    # Metrics & config storage
+│   └── message-broker/              # Inter-project communication
+├── project-orchestrator/            # Project Spoke Template
+│   ├── docker-compose.project.yml   # Project-specific services
+│   ├── Dockerfile.orchestrator      # Tmux orchestrator container
+│   ├── config/                      # Project configuration
+│   └── volumes/                     # Project data persistence
+└── scripts/                         # Management utilities
+    ├── create-project.sh             # New project deployment
+    ├── connect-to-hub.sh             # Hub registration
+    └── scale-project.sh              # Resource scaling
 ```
 
-**Container Design Principles**:
+### 9.2 Central Hub System Implementation
+
+**Hub Docker Compose Configuration**:
 ```yaml
-Base Container Features:
-├── Alpine Linux for minimal footprint
-├── tmux with proper configuration
-├── Python 3.11+ with required packages
-├── Node.js for dashboard components
-├── Git for repository management
-└── SSH client for remote operations
-
-Orchestrator Container:
-├── Non-root user execution for security
-├── Persistent volume mounts for session data
-├── Environment-based configuration
-├── Health check endpoints
-└── Graceful shutdown handling
-
-Dashboard Container:
-├── React/Next.js production build
-├── Nginx reverse proxy
-├── SSL/TLS termination
-└── API gateway integration
-```
-
-**Docker Compose Configuration**:
-```yaml
+# admin-system/docker-compose.admin.yml
 version: '3.8'
 services:
-  orchestrator:
-    build:
-      context: .
-      dockerfile: Dockerfile.orchestrator
-    volumes:
-      - orchestrator_data:/app/data
-      - orchestrator_logs:/app/logs
-      - orchestrator_sessions:/app/sessions
-      - /var/run/docker.sock:/var/run/docker.sock  # For Docker-in-Docker
-    environment:
-      - ORCHESTRATOR_MODE=production
-      - LOG_LEVEL=info
-      - DATABASE_URL=postgresql://...
-    networks:
-      - orchestrator_network
-    restart: unless-stopped
-
-  dashboard:
+  admin-dashboard:
     build:
       context: ./dashboard
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dashboard
     ports:
       - "3000:3000"
     environment:
-      - API_URL=http://orchestrator:8000
-      - NODE_ENV=production
+      - POSTGRES_URL=postgresql://admin:${ADMIN_DB_PASSWORD}@postgres:5432/orchestrator_hub
+      - REDIS_URL=redis://redis:6379
+      - MESSAGE_BROKER_URL=redis://redis:6379
     depends_on:
-      - orchestrator
+      - postgres
+      - redis
     networks:
-      - orchestrator_network
+      - hub_network
     restart: unless-stopped
 
-  database:
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile.gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgresql://admin:${ADMIN_DB_PASSWORD}@postgres:5432/orchestrator_hub
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - hub_network
+      - project_bridge  # Bridge to project networks
+    restart: unless-stopped
+
+  message-broker:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - hub_network
+      - project_bridge
+    restart: unless-stopped
+
+  postgres:
     image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=orchestrator_hub
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=${ADMIN_DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=orchestrator
-      - POSTGRES_USER=orchestrator
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - ./database/init:/docker-entrypoint-initdb.d
     networks:
-      - orchestrator_network
+      - hub_network
+    restart: unless-stopped
+
+  logging-aggregator:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki_data:/loki
+      - ./logging/loki-config.yml:/etc/loki/local-config.yaml
+    networks:
+      - hub_network
+      - project_bridge
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - hub_network
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - hub_network
+      - project_bridge
     restart: unless-stopped
 
 volumes:
-  orchestrator_data:
-  orchestrator_logs:
-  orchestrator_sessions:
   postgres_data:
+  redis_data:
+  loki_data:
+  grafana_data:
+  prometheus_data:
 
 networks:
-  orchestrator_network:
+  hub_network:
+    driver: bridge
+  project_bridge:
+    driver: bridge
+    external: true
+```
+
+**Project Registry System**:
+```python
+# Central project management
+class ProjectRegistryService:
+    def __init__(self):
+        self.db = DatabaseConnection()
+        self.message_broker = MessageBroker()
+        self.config_manager = ConfigManager()
+
+    async def register_project(self, project_config: ProjectConfig) -> ProjectRegistration:
+        """Register new project orchestrator with central hub"""
+
+        # Validate project configuration
+        validation_result = await self.validate_project_config(project_config)
+        if not validation_result.is_valid:
+            raise ValidationError(validation_result.errors)
+
+        # Allocate resources
+        resource_allocation = await self.allocate_project_resources(project_config)
+
+        # Generate project-specific configuration
+        generated_config = await self.generate_project_config(
+            project_config,
+            resource_allocation
+        )
+
+        # Store in registry
+        registration = ProjectRegistration(
+            project_id=project_config.id,
+            name=project_config.name,
+            status="pending",
+            allocated_resources=resource_allocation,
+            config=generated_config,
+            hub_endpoint=f"http://api-gateway:8080/projects/{project_config.id}",
+            logging_endpoint="http://logging-aggregator:3100/loki/api/v1/push",
+            metrics_endpoint="http://prometheus:9090/api/v1/write"
+        )
+
+        await self.db.projects.insert(registration)
+
+        # Notify monitoring systems
+        await self.message_broker.publish(
+            "project.registered",
+            registration.to_dict()
+        )
+
+        return registration
+
+    async def allocate_project_resources(self, config: ProjectConfig) -> ResourceAllocation:
+        """Intelligent resource allocation based on project requirements"""
+
+        # Analyze project type and complexity
+        complexity_score = await self.analyze_project_complexity(config)
+
+        # Check available system resources
+        available_resources = await self.get_available_resources()
+
+        # Calculate optimal allocation
+        allocation = ResourceAllocation(
+            cpu_limit=f"{min(complexity_score * 2, available_resources.cpu * 0.3)}",
+            memory_limit=f"{min(complexity_score * 512, available_resources.memory * 0.3)}Mi",
+            storage_limit=f"{complexity_score * 2}Gi",
+            network_bandwidth="100mbps",
+            concurrent_agents=min(complexity_score * 2, 10),
+            session_timeout=f"{complexity_score * 30}m"
+        )
+
+        return allocation
+
+    async def generate_project_config(self, project_config: ProjectConfig,
+                                    allocation: ResourceAllocation) -> Dict[str, Any]:
+        """Generate project-specific Docker Compose and configuration files"""
+
+        # Load base template
+        template = await self.config_manager.load_template(project_config.project_type)
+
+        # Inject project-specific values
+        config = {
+            "project_id": project_config.id,
+            "project_name": project_config.name,
+            "project_path": project_config.path,
+            "hub_connection": {
+                "api_endpoint": f"http://api-gateway:8080/projects/{project_config.id}",
+                "message_broker": "redis://message-broker:6379",
+                "logging_endpoint": "http://logging-aggregator:3100",
+                "metrics_endpoint": "http://prometheus:9090"
+            },
+            "resource_limits": allocation.to_dict(),
+            "technology_stack": project_config.technology_stack,
+            "environment_variables": project_config.environment or {},
+            "volume_mounts": self.generate_volume_mounts(project_config),
+            "network_config": {
+                "project_network": f"project_{project_config.id}_network",
+                "hub_bridge": "project_bridge"
+            }
+        }
+
+        return config
+```
+
+### 9.3 Project Orchestrator Container System
+
+**Project Docker Compose Template**:
+```yaml
+# project-orchestrator/docker-compose.project.yml
+version: '3.8'
+services:
+  tmux-orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.orchestrator
+      args:
+        - PROJECT_TYPE=${PROJECT_TYPE}
+        - TECHNOLOGY_STACK=${TECHNOLOGY_STACK}
+    environment:
+      # Project identification
+      - PROJECT_ID=${PROJECT_ID}
+      - PROJECT_NAME=${PROJECT_NAME}
+      - PROJECT_PATH=${PROJECT_PATH}
+
+      # Hub connection
+      - HUB_API_ENDPOINT=${HUB_API_ENDPOINT}
+      - HUB_MESSAGE_BROKER=${HUB_MESSAGE_BROKER}
+      - HUB_LOGGING_ENDPOINT=${HUB_LOGGING_ENDPOINT}
+      - HUB_METRICS_ENDPOINT=${HUB_METRICS_ENDPOINT}
+
+      # Resource limits
+      - CPU_LIMIT=${CPU_LIMIT}
+      - MEMORY_LIMIT=${MEMORY_LIMIT}
+      - SESSION_TIMEOUT=${SESSION_TIMEOUT}
+
+      # Authentication
+      - PROJECT_TOKEN=${PROJECT_TOKEN}
+      - HUB_API_KEY=${HUB_API_KEY}
+
+    volumes:
+      # Project workspace
+      - "${PROJECT_PATH}:/workspace"
+      # Session persistence
+      - "tmux_sessions:/app/sessions"
+      # Agent configurations
+      - "agent_configs:/app/agent-configs"
+      # Project logs
+      - "project_logs:/app/logs"
+      # Docker socket for container spawning
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+    networks:
+      - project_network
+      - project_bridge  # Connection to hub
+
+    deploy:
+      resources:
+        limits:
+          cpus: "${CPU_LIMIT}"
+          memory: "${MEMORY_LIMIT}"
+        reservations:
+          cpus: "${CPU_LIMIT * 0.5}"
+          memory: "${MEMORY_LIMIT * 0.5}"
+
+    healthcheck:
+      test: ["CMD", "python3", "/app/health_check.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    restart: unless-stopped
+
+  project-agent-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent-runner
+    environment:
+      - PROJECT_ID=${PROJECT_ID}
+      - AGENT_REGISTRY_URL=${HUB_API_ENDPOINT}/agents
+    volumes:
+      - "agent_configs:/app/agent-configs"
+      - "${PROJECT_PATH}:/workspace"
+    networks:
+      - project_network
+    depends_on:
+      - tmux-orchestrator
+    restart: unless-stopped
+
+  project-logger:
+    image: grafana/promtail:2.9.0
+    volumes:
+      - "project_logs:/var/log"
+      - "./logging/promtail-config.yml:/etc/promtail/config.yml"
+    environment:
+      - LOKI_URL=${HUB_LOGGING_ENDPOINT}
+      - PROJECT_ID=${PROJECT_ID}
+    networks:
+      - project_bridge
+    restart: unless-stopped
+
+volumes:
+  tmux_sessions:
+  agent_configs:
+  project_logs:
+
+networks:
+  project_network:
+    driver: bridge
+    name: "project_${PROJECT_ID}_network"
+  project_bridge:
+    external: true
+```
+
+**Multi-Project Configuration Management**:
+```python
+class MultiProjectConfigManager:
+    def __init__(self):
+        self.base_path = Path("/etc/orchestrator")
+        self.projects_path = self.base_path / "projects"
+        self.templates_path = self.base_path / "templates"
+
+    def create_project_config(self, project_request: ProjectCreationRequest) -> ProjectConfig:
+        """Generate isolated configuration for new project"""
+
+        project_id = self.generate_project_id(project_request.name)
+        project_path = self.projects_path / project_id
+        project_path.mkdir(parents=True, exist_ok=True)
+
+        # Base configuration
+        config = {
+            "project": {
+                "id": project_id,
+                "name": project_request.name,
+                "type": project_request.project_type,
+                "path": str(project_request.workspace_path),
+                "created_at": datetime.utcnow().isoformat(),
+                "status": "initializing"
+            },
+
+            "hub_connection": {
+                "api_endpoint": f"{self.hub_base_url}/projects/{project_id}",
+                "message_broker": f"{self.hub_message_broker}",
+                "logging_endpoint": f"{self.hub_logging_url}",
+                "metrics_endpoint": f"{self.hub_metrics_url}",
+                "auth_token": self.generate_project_token(project_id)
+            },
+
+            "resources": {
+                "cpu_limit": project_request.cpu_limit or "2.0",
+                "memory_limit": project_request.memory_limit or "4Gi",
+                "storage_limit": project_request.storage_limit or "10Gi",
+                "max_agents": project_request.max_agents or 5,
+                "session_timeout": project_request.session_timeout or "2h"
+            },
+
+            "orchestrator": {
+                "docker_compose_file": str(project_path / "docker-compose.yml"),
+                "env_file": str(project_path / ".env"),
+                "volumes_path": str(project_path / "volumes"),
+                "logs_path": str(project_path / "logs"),
+                "network_name": f"project_{project_id}_network"
+            },
+
+            "technology_stack": self.detect_technology_stack(project_request.workspace_path),
+
+            "agents": {
+                "default_agents": self.get_default_agents(project_request.project_type),
+                "specialized_agents": project_request.specialized_agents or [],
+                "agent_configs_path": str(project_path / "agent-configs")
+            }
+        }
+
+        # Save configuration
+        config_file = project_path / "project-config.yml"
+        with open(config_file, 'w') as f:
+            yaml.dump(config, f, default_flow_style=False)
+
+        # Generate Docker Compose file
+        self.generate_docker_compose(config, project_path)
+
+        # Generate environment file
+        self.generate_env_file(config, project_path)
+
+        return ProjectConfig.from_dict(config)
+
+    def generate_docker_compose(self, config: Dict[str, Any], project_path: Path):
+        """Generate project-specific Docker Compose file"""
+
+        template = self.load_template("docker-compose.project.yml.j2")
+
+        # Render template with project-specific values
+        rendered = template.render(
+            project_id=config["project"]["id"],
+            project_name=config["project"]["name"],
+            project_path=config["project"]["path"],
+            project_type=config["project"]["type"],
+            cpu_limit=config["resources"]["cpu_limit"],
+            memory_limit=config["resources"]["memory_limit"],
+            hub_endpoints=config["hub_connection"],
+            technology_stack=config["technology_stack"],
+            agent_configs=config["agents"]
+        )
+
+        compose_file = project_path / "docker-compose.yml"
+        with open(compose_file, 'w') as f:
+            f.write(rendered)
+
+    def generate_env_file(self, config: Dict[str, Any], project_path: Path):
+        """Generate environment variables file for project"""
+
+        env_vars = {
+            "PROJECT_ID": config["project"]["id"],
+            "PROJECT_NAME": config["project"]["name"],
+            "PROJECT_PATH": config["project"]["path"],
+            "PROJECT_TYPE": config["project"]["type"],
+
+            "HUB_API_ENDPOINT": config["hub_connection"]["api_endpoint"],
+            "HUB_MESSAGE_BROKER": config["hub_connection"]["message_broker"],
+            "HUB_LOGGING_ENDPOINT": config["hub_connection"]["logging_endpoint"],
+            "HUB_METRICS_ENDPOINT": config["hub_connection"]["metrics_endpoint"],
+            "PROJECT_TOKEN": config["hub_connection"]["auth_token"],
+
+            "CPU_LIMIT": config["resources"]["cpu_limit"],
+            "MEMORY_LIMIT": config["resources"]["memory_limit"],
+            "SESSION_TIMEOUT": config["resources"]["session_timeout"],
+
+            "TECHNOLOGY_STACK": ",".join(config["technology_stack"]),
+        }
+
+        env_file = project_path / ".env"
+        with open(env_file, 'w') as f:
+            for key, value in env_vars.items():
+                f.write(f"{key}={value}\n")
+```
+
+### 9.4 Multi-Project Management Operations
+
+**Project Creation Script**:
+```bash
+#!/bin/bash
+# scripts/create-project.sh
+
+set -e
+
+PROJECT_NAME="$1"
+PROJECT_PATH="$2"
+PROJECT_TYPE="${3:-auto-detect}"
+CPU_LIMIT="${4:-2.0}"
+MEMORY_LIMIT="${5:-4Gi}"
+
+if [ -z "$PROJECT_NAME" ] || [ -z "$PROJECT_PATH" ]; then
+    echo "Usage: $0 <project-name> <project-path> [project-type] [cpu-limit] [memory-limit]"
+    echo "Example: $0 my-web-app /home/user/projects/web-app node-js 4.0 8Gi"
+    exit 1
+fi
+
+echo "🚀 Creating new project orchestrator: $PROJECT_NAME"
+
+# Validate project path exists
+if [ ! -d "$PROJECT_PATH" ]; then
+    echo "❌ Error: Project path '$PROJECT_PATH' does not exist"
+    exit 1
+fi
+
+# Check if hub system is running
+if ! curl -f http://localhost:8080/health >/dev/null 2>&1; then
+    echo "❌ Error: Hub system is not running. Start it with:"
+    echo "   cd admin-system && docker-compose -f docker-compose.admin.yml up -d"
+    exit 1
+fi
+
+# Generate unique project ID
+PROJECT_ID=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g')
+TIMESTAMP=$(date +%Y%m%d%H%M%S)
+PROJECT_ID="${PROJECT_ID}-${TIMESTAMP}"
+
+echo "📋 Project Configuration:"
+echo "   ID: $PROJECT_ID"
+echo "   Name: $PROJECT_NAME"
+echo "   Path: $PROJECT_PATH"
+echo "   Type: $PROJECT_TYPE"
+echo "   CPU Limit: $CPU_LIMIT"
+echo "   Memory Limit: $MEMORY_LIMIT"
+
+# Create project directory
+PROJECT_DIR="/etc/orchestrator/projects/$PROJECT_ID"
+mkdir -p "$PROJECT_DIR"
+
+# Register project with hub
+echo "📡 Registering project with central hub..."
+REGISTRATION_RESPONSE=$(curl -s -X POST http://localhost:8080/api/projects \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"name\": \"$PROJECT_NAME\",
+    \"id\": \"$PROJECT_ID\",
+    \"path\": \"$PROJECT_PATH\",
+    \"project_type\": \"$PROJECT_TYPE\",
+    \"cpu_limit\": \"$CPU_LIMIT\",
+    \"memory_limit\": \"$MEMORY_LIMIT\"
+  }")
+
+if [ $? -ne 0 ]; then
+    echo "❌ Failed to register project with hub"
+    exit 1
+fi
+
+# Extract configuration from response
+echo "$REGISTRATION_RESPONSE" | jq . > "$PROJECT_DIR/registration.json"
+
+# Download generated configuration files
+echo "⬇️  Downloading generated configuration..."
+curl -s "http://localhost:8080/api/projects/$PROJECT_ID/config/docker-compose" \
+  -o "$PROJECT_DIR/docker-compose.yml"
+
+curl -s "http://localhost:8080/api/projects/$PROJECT_ID/config/env" \
+  -o "$PROJECT_DIR/.env"
+
+curl -s "http://localhost:8080/api/projects/$PROJECT_ID/config/project-config" \
+  -o "$PROJECT_DIR/project-config.yml"
+
+# Create project bridge network if it doesn't exist
+if ! docker network ls | grep -q "project_bridge"; then
+    echo "🌐 Creating project bridge network..."
+    docker network create project_bridge
+fi
+
+# Start project orchestrator
+echo "🐳 Starting project orchestrator containers..."
+cd "$PROJECT_DIR"
+docker-compose up -d
+
+# Wait for health check
+echo "⏳ Waiting for orchestrator to be healthy..."
+for i in {1..30}; do
+    if docker-compose ps | grep -q "healthy"; then
+        echo "✅ Project orchestrator is healthy and running!"
+        break
+    fi
+    if [ $i -eq 30 ]; then
+        echo "❌ Timeout waiting for orchestrator to become healthy"
+        docker-compose logs
+        exit 1
+    fi
+    sleep 2
+done
+
+# Display connection information
+echo ""
+echo "🎉 Project orchestrator created successfully!"
+echo ""
+echo "📊 Access your project:"
+echo "   Hub Dashboard: http://localhost:3000/projects/$PROJECT_ID"
+echo "   Project Logs: docker-compose -f $PROJECT_DIR/docker-compose.yml logs -f"
+echo "   Direct Connect: docker-compose -f $PROJECT_DIR/docker-compose.yml exec tmux-orchestrator tmux attach"
+echo ""
+echo "🛠️  Management commands:"
+echo "   Stop: docker-compose -f $PROJECT_DIR/docker-compose.yml down"
+echo "   Restart: docker-compose -f $PROJECT_DIR/docker-compose.yml restart"
+echo "   Remove: $0 --remove $PROJECT_ID"
+echo ""
+```
+
+**Hub Management Script**:
+```bash
+#!/bin/bash
+# scripts/manage-hub.sh
+
+COMMAND="$1"
+HUB_DIR="$(dirname "$0")/../admin-system"
+
+case "$COMMAND" in
+    "start")
+        echo "🚀 Starting Orchestrator Hub System..."
+        cd "$HUB_DIR"
+
+        # Create bridge network
+        docker network create project_bridge 2>/dev/null || true
+
+        # Start hub services
+        docker-compose -f docker-compose.admin.yml up -d
+
+        echo "⏳ Waiting for services to be ready..."
+        sleep 10
+
+        # Health check
+        if curl -f http://localhost:8080/health >/dev/null 2>&1; then
+            echo "✅ Hub system is running!"
+            echo "   Dashboard: http://localhost:3000"
+            echo "   API: http://localhost:8080"
+            echo "   Grafana: http://localhost:3001"
+        else
+            echo "❌ Hub system failed to start properly"
+            docker-compose -f docker-compose.admin.yml logs
+            exit 1
+        fi
+        ;;
+
+    "stop")
+        echo "🛑 Stopping Hub System..."
+        cd "$HUB_DIR"
+        docker-compose -f docker-compose.admin.yml down
+        echo "✅ Hub system stopped"
+        ;;
+
+    "restart")
+        echo "🔄 Restarting Hub System..."
+        cd "$HUB_DIR"
+        docker-compose -f docker-compose.admin.yml restart
+        echo "✅ Hub system restarted"
+        ;;
+
+    "status")
+        echo "📊 Hub System Status:"
+        cd "$HUB_DIR"
+        docker-compose -f docker-compose.admin.yml ps
+        ;;
+
+    "logs")
+        echo "📄 Hub System Logs:"
+        cd "$HUB_DIR"
+        docker-compose -f docker-compose.admin.yml logs -f
+        ;;
+
+    "update")
+        echo "🔄 Updating Hub System..."
+        cd "$HUB_DIR"
+        docker-compose -f docker-compose.admin.yml down
+        docker-compose -f docker-compose.admin.yml pull
+        docker-compose -f docker-compose.admin.yml up -d
+        echo "✅ Hub system updated"
+        ;;
+
+    *)
+        echo "Usage: $0 {start|stop|restart|status|logs|update}"
+        echo ""
+        echo "Commands:"
+        echo "  start   - Start the central hub system"
+        echo "  stop    - Stop the central hub system"
+        echo "  restart - Restart the central hub system"
+        echo "  status  - Show status of hub services"
+        echo "  logs    - Show and follow hub logs"
+        echo "  update  - Update hub system to latest version"
+        exit 1
+        ;;
+esac
+```
+
+### 9.5 Network Architecture and Communication
+
+**Inter-Container Communication**:
+```yaml
+# Network topology for hub-and-spoke architecture
+networks:
+  # Hub network - internal communication between hub services
+  hub_internal:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+  # Project bridge - connects hub to project orchestrators
+  project_bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+  # External network - internet access for projects
+  external:
     driver: bridge
 ```
 
+**Message Routing Architecture**:
+```python
+# hub-services/message-router/router.py
+import redis
+import json
+from typing import Dict, List
+import asyncio
+
+class MessageRouter:
+    """Routes messages between hub and project orchestrators"""
+
+    def __init__(self):
+        self.redis = redis.Redis(host='redis', port=6379, decode_responses=True)
+        self.project_channels = {}
+
+    async def route_to_project(self, project_id: str, message: Dict):
+        """Route message from hub to specific project"""
+        channel = f"project:{project_id}:inbox"
+
+        # Add routing metadata
+        routed_message = {
+            'source': 'hub',
+            'destination': project_id,
+            'timestamp': datetime.utcnow().isoformat(),
+            'message_id': str(uuid.uuid4()),
+            'payload': message
+        }
+
+        self.redis.publish(channel, json.dumps(routed_message))
+
+    async def route_from_project(self, project_id: str, message: Dict):
+        """Route message from project to hub or other projects"""
+        destination = message.get('destination', 'hub')
+
+        if destination == 'hub':
+            channel = "hub:inbox"
+        elif destination.startswith('project:'):
+            target_project = destination.split(':')[1]
+            channel = f"project:{target_project}:inbox"
+        else:
+            # Broadcast to all projects
+            await self.broadcast_to_all_projects(message, exclude=project_id)
+            return
+
+        routed_message = {
+            'source': project_id,
+            'destination': destination,
+            'timestamp': datetime.utcnow().isoformat(),
+            'message_id': str(uuid.uuid4()),
+            'payload': message
+        }
+
+        self.redis.publish(channel, json.dumps(routed_message))
+
+    async def broadcast_to_all_projects(self, message: Dict, exclude: str = None):
+        """Broadcast message to all active projects"""
+        active_projects = await self.get_active_projects()
+
+        for project_id in active_projects:
+            if project_id != exclude:
+                await self.route_to_project(project_id, message)
+```
+
+**Service Discovery**:
+```python
+# hub-services/discovery/service_registry.py
+class ServiceRegistry:
+    """Manages service discovery for distributed orchestrators"""
+
+    def __init__(self):
+        self.redis = redis.Redis(host='redis', port=6379, decode_responses=True)
+
+    async def register_project(self, project_id: str, config: Dict):
+        """Register a new project orchestrator"""
+        service_info = {
+            'project_id': project_id,
+            'container_name': f"orchestrator-{project_id}",
+            'internal_ip': config['internal_ip'],
+            'tmux_port': config['tmux_port'],
+            'api_port': config['api_port'],
+            'status': 'starting',
+            'registered_at': datetime.utcnow().isoformat(),
+            'last_heartbeat': datetime.utcnow().isoformat()
+        }
+
+        # Store in Redis with TTL
+        self.redis.hset(f"service:project:{project_id}", mapping=service_info)
+        self.redis.expire(f"service:project:{project_id}", 300)  # 5 minute TTL
+
+    async def heartbeat(self, project_id: str):
+        """Update project heartbeat"""
+        self.redis.hset(f"service:project:{project_id}",
+                       'last_heartbeat', datetime.utcnow().isoformat())
+        self.redis.expire(f"service:project:{project_id}", 300)
+
+    async def get_project_info(self, project_id: str) -> Dict:
+        """Get project service information"""
+        return self.redis.hgetall(f"service:project:{project_id}")
+
+    async def list_active_projects(self) -> List[str]:
+        """List all active project orchestrators"""
+        pattern = "service:project:*"
+        keys = self.redis.keys(pattern)
+        return [key.split(':')[2] for key in keys]
+```
+
+### 9.6 Deployment and Operations
+
+**Production Deployment**:
+```yaml
+# k8s/hub-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orchestrator-hub
+  namespace: orchestrator-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orchestrator-hub
+  template:
+    metadata:
+      labels:
+        app: orchestrator-hub
+    spec:
+      containers:
+      - name: hub-dashboard
+        image: orchestrator/hub-dashboard:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "0.2"
+          limits:
+            memory: "512Mi"
+            cpu: "0.5"
+
+      - name: hub-api
+        image: orchestrator/hub-api:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: orchestrator-secrets
+              key: database-url
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "0.3"
+          limits:
+            memory: "1Gi"
+            cpu: "0.8"
+
+      - name: message-router
+        image: orchestrator/message-router:latest
+        env:
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "0.1"
+          limits:
+            memory: "256Mi"
+            cpu: "0.3"
+```
+
+**Auto-scaling Project Orchestrators**:
+```yaml
+# k8s/project-orchestrator-hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: project-orchestrator-hpa
+  namespace: orchestrator-projects
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: project-orchestrator
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 30
+```
+
+**Monitoring and Observability**:
+```yaml
+# monitoring/prometheus-config.yml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'orchestrator-hub'
+    static_configs:
+      - targets: ['hub-api:8080', 'hub-dashboard:3000']
+    metrics_path: '/metrics'
+
+  - job_name: 'project-orchestrators'
+    consul_sd_configs:
+      - server: 'consul:8500'
+        services: ['project-orchestrator']
+    relabel_configs:
+      - source_labels: [__meta_consul_service_metadata_project_id]
+        target_label: project_id
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+rule_files:
+  - "alert_rules.yml"
+```
+
+**Backup and Recovery**:
+```bash
+#!/bin/bash
+# scripts/backup-restore.sh
+
+backup_system() {
+    BACKUP_DIR="/backups/$(date +%Y%m%d_%H%M%S)"
+    mkdir -p "$BACKUP_DIR"
+
+    echo "🗄️  Creating system backup..."
+
+    # Backup Redis data
+    docker exec redis redis-cli BGSAVE
+    docker cp redis:/data/dump.rdb "$BACKUP_DIR/redis-dump.rdb"
+
+    # Backup project configurations
+    tar -czf "$BACKUP_DIR/project-configs.tar.gz" /etc/orchestrator/projects/
+
+    # Backup hub configuration
+    tar -czf "$BACKUP_DIR/hub-config.tar.gz" /etc/orchestrator/hub/
+
+    # Export container images
+    docker save -o "$BACKUP_DIR/hub-images.tar" \
+        orchestrator/hub-dashboard:latest \
+        orchestrator/hub-api:latest \
+        orchestrator/message-router:latest
+
+    # Create backup manifest
+    cat > "$BACKUP_DIR/manifest.json" << EOF
+{
+    "backup_time": "$(date -Iseconds)",
+    "version": "$(git rev-parse HEAD)",
+    "projects": $(curl -s http://localhost:8080/api/projects | jq '[.[].id]'),
+    "files": [
+        "redis-dump.rdb",
+        "project-configs.tar.gz",
+        "hub-config.tar.gz",
+        "hub-images.tar"
+    ]
+}
+EOF
+
+    echo "✅ Backup completed: $BACKUP_DIR"
+}
+
+restore_system() {
+    BACKUP_DIR="$1"
+
+    if [ ! -d "$BACKUP_DIR" ]; then
+        echo "❌ Backup directory not found: $BACKUP_DIR"
+        exit 1
+    fi
+
+    echo "🔄 Restoring system from backup..."
+
+    # Stop all services
+    ./manage-hub.sh stop
+
+    # Restore Redis data
+    docker cp "$BACKUP_DIR/redis-dump.rdb" redis:/data/dump.rdb
+
+    # Restore configurations
+    tar -xzf "$BACKUP_DIR/project-configs.tar.gz" -C /
+    tar -xzf "$BACKUP_DIR/hub-config.tar.gz" -C /
+
+    # Restore container images
+    docker load -i "$BACKUP_DIR/hub-images.tar"
+
+    # Restart services
+    ./manage-hub.sh start
+
+    echo "✅ System restored successfully"
+}
+
+case "$1" in
+    "backup")
+        backup_system
+        ;;
+    "restore")
+        restore_system "$2"
+        ;;
+    *)
+        echo "Usage: $0 {backup|restore <backup-dir>}"
+        exit 1
+        ;;
+esac
+```
+
+### 9.7 Implementation Roadmap
+
+**Phase 1: Hub System Foundation (Week 1-2)**
+- [ ] Create hub-system Docker Compose setup
+- [ ] Implement basic dashboard with React + TypeScript
+- [ ] Build REST API with project registration
+- [ ] Set up Redis for message routing
+- [ ] Create basic monitoring with Prometheus
+
+**Phase 2: Project Orchestrator Containers (Week 3-4)**
+- [ ] Build project orchestrator container images
+- [ ] Implement dynamic Docker Compose generation
+- [ ] Create project isolation and resource management
+- [ ] Build message routing between hub and projects
+- [ ] Add health checks and service discovery
+
+**Phase 3: Management Tools (Week 5)**
+- [ ] Build command-line management interface
+- [ ] Create project creation and lifecycle scripts
+- [ ] Implement backup and restore functionality
+- [ ] Add logging aggregation and monitoring
+
+**Phase 4: Production Features (Week 6-8)**
+- [ ] Kubernetes deployment manifests
+- [ ] Auto-scaling configuration
+- [ ] Security hardening and secrets management
+- [ ] Performance optimization and caching
+- [ ] Comprehensive documentation and examples
+
 **Acceptance Criteria**:
-- [ ] Multi-stage Docker builds for optimized image sizes
-- [ ] Docker Compose setup for complete local development environment
-- [ ] Kubernetes manifests for production deployment
-- [ ] Persistent volume management for session data and logs
-- [ ] Environment-based configuration without hard-coded paths
-- [ ] Health checks and graceful shutdown handling
-- [ ] Security hardening with non-root user execution
-- [ ] Docker-in-Docker support for project containerization
+- [ ] Single command starts complete hub system
+- [ ] Projects can be created, managed, and isolated automatically
+- [ ] Central dashboard shows all project status and metrics
+- [ ] Message routing works reliably between hub and projects
+- [ ] System can handle 10+ simultaneous projects
+- [ ] Complete backup/restore functionality
+- [ ] Production-ready Kubernetes deployment
+- [ ] Comprehensive monitoring and alerting
 
 **Benefits**:
-- Eliminates "works on my machine" issues completely
-- 90% reduction in setup time (one `docker-compose up` command)
-- Complete environment isolation and reproducibility
-- Easy scaling across multiple hosts
-- Simplified backup and migration through volume management
-- Production-ready deployment with Kubernetes support
+- **10x Scalability**: Manage dozens of projects simultaneously
+- **Zero-Conflict Isolation**: Projects run in complete isolation
+- **Operational Excellence**: Central management with distributed execution
+- **Production Ready**: Full containerization with auto-scaling
+- **Developer Experience**: One command to start, intuitive management tools
+- **Resource Efficiency**: Intelligent resource allocation and sharing
+```
 
-### 9.2 Advanced Container Features
-**Current State**: Basic containerization needs
-
-**Proposed Advanced Features**:
-
-#### Project Isolation Containers
+**Project Management CLI**:
 ```bash
+#!/bin/bash
+# scripts/orchestrator-cli.sh
+
+COMMAND="$1"
+PROJECT_ID="$2"
+
+show_help() {
+    cat << EOF
+Tmux Orchestrator Multi-Project CLI
+
+USAGE:
+    orchestrator-cli.sh <command> [project-id] [options]
+
+COMMANDS:
+    Hub Management:
+        hub start                     Start central hub system
+        hub stop                      Stop central hub system
+        hub status                    Show hub system status
+        hub logs                      Show hub system logs
+
+    Project Management:
+        create <name> <path> [type]   Create new project orchestrator
+        list                          List all projects
+        status <project-id>           Show project status
+        logs <project-id>             Show project logs
+        stop <project-id>             Stop project orchestrator
+        start <project-id>            Start project orchestrator
+        restart <project-id>          Restart project orchestrator
+        remove <project-id>           Remove project orchestrator
+
+    Agent Operations:
+        agents <project-id>           List agents in project
+        connect <project-id>          Connect to project tmux session
+        message <project-id> <msg>    Send message to project agents
+
+    Monitoring:
+        dashboard                     Open hub dashboard
+        metrics <project-id>          Show project metrics
+        health                        System health overview
+
+EXAMPLES:
+    # Start the hub system
+    orchestrator-cli.sh hub start
+
+    # Create a new project
+    orchestrator-cli.sh create my-web-app /home/user/projects/webapp
+
+    # List all projects
+    orchestrator-cli.sh list
+
+    # Connect to a project
+    orchestrator-cli.sh connect my-web-app-20250912
+
+    # Send message to project agents
+    orchestrator-cli.sh message my-web-app-20250912 "Please implement user authentication"
+
+    # View project logs
+    orchestrator-cli.sh logs my-web-app-20250912
+
+EOF
+}
+
+case "$COMMAND" in
+    "hub")
+        ./manage-hub.sh "$PROJECT_ID"
+        ;;
+    "create")
+        PROJECT_NAME="$PROJECT_ID"
+        PROJECT_PATH="$3"
+        PROJECT_TYPE="${4:-auto-detect}"
+        ./create-project.sh "$PROJECT_NAME" "$PROJECT_PATH" "$PROJECT_TYPE"
+        ;;
+    "list")
+        echo "📋 Active Projects:"
+        curl -s http://localhost:8080/api/projects | jq -r '.[] | "\(.id) - \(.name) (\(.status))"'
+        ;;
+    "status")
+        if [ -z "$PROJECT_ID" ]; then
+            echo "Error: Project ID required"
+            exit 1
+        fi
+        curl -s "http://localhost:8080/api/projects/$PROJECT_ID/status" | jq .
+        ;;
+    "connect")
+        if [ -z "$PROJECT_ID" ]; then
+            echo "Error: Project ID required"
+            exit 1
+        fi
+        PROJECT_DIR="/etc/orchestrator/projects/$PROJECT_ID"
+        if [ ! -d "$PROJECT_DIR" ]; then
+            echo "Error: Project not found"
+            exit 1
+        fi
+        cd "$PROJECT_DIR"
+        docker-compose exec tmux-orchestrator tmux attach
+        ;;
+    "message")
+        MESSAGE="$3"
+        if [ -z "$PROJECT_ID" ] || [ -z "$MESSAGE" ]; then
+            echo "Error: Project ID and message required"
+            exit 1
+        fi
+        curl -X POST "http://localhost:8080/api/projects/$PROJECT_ID/message" \
+          -H "Content-Type: application/json" \
+          -d "{\"message\": \"$MESSAGE\"}"
+        ;;
+    "dashboard")
+        echo "Opening dashboard..."
+        open http://localhost:3000 || xdg-open http://localhost:3000
+        ;;
+    "health")
+        echo "🏥 System Health Overview:"
+        echo "Hub Status:"
+        curl -s http://localhost:8080/health | jq .
+        echo ""
+        echo "Projects Status:"
+        curl -s http://localhost:8080/api/projects/health | jq .
+        ;;
+    *)
+        show_help
+        ;;
+esac
+```
 # Each project gets its own container
 docker run -d \
   --name "project-${PROJECT_NAME}" \

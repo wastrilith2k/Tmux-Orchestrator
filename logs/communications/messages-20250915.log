@@ -1798,3 +1798,154 @@ Continue your excellent work! 🚀
 [2025-09-15 21:26:59] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
 [2025-09-15 21:27:09] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=24
 [2025-09-15 21:27:09] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:28:00] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:28:39] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=25
+[2025-09-15 21:28:40] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:28:42] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=19
+[2025-09-15 21:28:42] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:28:53] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=248
+[2025-09-15 21:28:53] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=248
+[2025-09-15 21:28:53] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:28:53] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:29:00] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:30:00] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:30:10] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=26
+[2025-09-15 21:30:10] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:30:42] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=20
+[2025-09-15 21:30:43] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:30:53] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=249
+[2025-09-15 21:30:53] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=249
+[2025-09-15 21:30:54] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:30:54] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:31:01] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:31:40] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=27
+[2025-09-15 21:31:41] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:32:01] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:32:43] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=21
+[2025-09-15 21:32:43] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:32:54] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=250
+[2025-09-15 21:32:54] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=250
+[2025-09-15 21:32:54] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:32:54] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:33:01] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:33:11] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=28
+[2025-09-15 21:33:12] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:34:01] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:34:42] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=29
+[2025-09-15 21:34:42] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:34:43] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=22
+[2025-09-15 21:34:44] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:34:54] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=251
+[2025-09-15 21:34:54] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=251
+[2025-09-15 21:34:55] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:34:55] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:35:02] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:36:02] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:36:12] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=30
+[2025-09-15 21:36:13] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:36:44] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=23
+[2025-09-15 21:36:45] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:36:55] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=252
+[2025-09-15 21:36:55] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=252
+[2025-09-15 21:36:55] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:36:55] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:37:02] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:37:43] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=31
+[2025-09-15 21:37:43] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:38:02] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:38:45] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=24
+[2025-09-15 21:38:45] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:38:55] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=253
+[2025-09-15 21:38:56] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=253
+[2025-09-15 21:38:56] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:38:56] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:39:03] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:39:13] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=32
+[2025-09-15 21:39:14] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:40:03] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:40:44] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=33
+[2025-09-15 21:40:44] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:40:45] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=25
+[2025-09-15 21:40:46] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:40:56] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=254
+[2025-09-15 21:40:56] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=254
+[2025-09-15 21:40:56] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:40:57] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:41:03] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:42:03] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:42:14] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=34
+[2025-09-15 21:42:15] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:42:46] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=26
+[2025-09-15 21:42:46] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:42:57] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=255
+[2025-09-15 21:42:57] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=255
+[2025-09-15 21:42:57] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:42:57] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:43:04] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:43:45] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=35
+[2025-09-15 21:43:46] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:44:04] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:44:47] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=27
+[2025-09-15 21:44:47] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:44:57] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=256
+[2025-09-15 21:44:57] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=256
+[2025-09-15 21:44:58] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:44:58] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:45:04] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:45:16] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=36
+[2025-09-15 21:45:16] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:46:04] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:46:46] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=37
+[2025-09-15 21:46:47] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:46:47] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=28
+[2025-09-15 21:46:48] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:46:58] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=257
+[2025-09-15 21:46:58] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=257
+[2025-09-15 21:46:58] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:46:58] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:47:05] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:48:05] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:48:17] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=38
+[2025-09-15 21:48:17] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:48:48] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=29
+[2025-09-15 21:48:48] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:48:58] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=258
+[2025-09-15 21:48:58] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=258
+[2025-09-15 21:48:59] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:48:59] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:49:05] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:49:47] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=39
+[2025-09-15 21:49:48] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:50:05] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:50:48] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=30
+[2025-09-15 21:50:49] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:50:59] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=259
+[2025-09-15 21:50:59] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=259
+[2025-09-15 21:50:59] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:51:00] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:51:06] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:51:18] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=40
+[2025-09-15 21:51:18] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:52:06] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:52:48] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=41
+[2025-09-15 21:52:49] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:52:49] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=31
+[2025-09-15 21:52:49] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:52:59] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=260
+[2025-09-15 21:53:00] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=260
+[2025-09-15 21:53:00] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:53:00] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:53:06] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:54:07] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:54:19] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=42
+[2025-09-15 21:54:20] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:54:50] SENDING to pm-test-todo-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=32
+[2025-09-15 21:54:50] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:55:00] SENDING to pm-node-ecommerce-app:0: DEVOPS REPORT: Deployment=2/4, Health=GOOD, Cycle=261
+[2025-09-15 21:55:00] SENDING to pm-python-ml-pipeline:0: DEVOPS REPORT: Deployment=3/4, Health=GOOD, Cycle=261
+[2025-09-15 21:55:01] SUCCESS: Message sent to pm-node-ecommerce-app:0
+[2025-09-15 21:55:01] SUCCESS: Message sent to pm-python-ml-pipeline:0
+[2025-09-15 21:55:07] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist
+[2025-09-15 21:55:50] SENDING to pm-test-todo-app:0: QA REPORT: Quality=GOOD, Tests=0, Docs=0, Cycle=43
+[2025-09-15 21:55:50] SUCCESS: Message sent to pm-test-todo-app:0
+[2025-09-15 21:56:07] ERROR: Failed to send to proj-node-ecommerce-app - window does not exist

@@ -87,7 +87,7 @@ docker-compose -f docker-compose.containerized.yml ps
 echo ""
 echo "📡 Infrastructure Services:"
 echo "  - PostgreSQL: http://localhost:5432"
-echo "  - Redis: http://localhost:6379" 
+echo "  - Redis: http://localhost:6379"
 echo "  - API Gateway: http://localhost:8080"
 
 echo ""

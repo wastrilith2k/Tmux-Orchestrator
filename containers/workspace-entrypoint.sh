@@ -46,7 +46,7 @@ case "$PROJECT_TYPE" in
 EOF
             echo "Created package.json"
         fi
-        
+
         # Create basic project structure
         mkdir -p src public test
         if [ ! -f "src/index.js" ]; then
@@ -66,7 +66,7 @@ EOF
             echo "Created basic Express server"
         fi
         ;;
-        
+
     "python")
         echo "🐍 Setting up Python project structure"
         if [ ! -f "requirements.txt" ]; then
@@ -78,7 +78,7 @@ pytest==7.4.3
 EOF
             echo "Created requirements.txt"
         fi
-        
+
         # Create Python project structure
         mkdir -p src tests
         if [ ! -f "src/main.py" ]; then
@@ -97,7 +97,7 @@ if __name__ == "__main__":
 EOF
             echo "Created basic FastAPI application"
         fi
-        
+
         # Set up virtual environment
         if [ ! -d "venv" ]; then
             python3 -m venv venv
@@ -106,7 +106,7 @@ EOF
             echo "Created Python virtual environment"
         fi
         ;;
-        
+
     *)
         echo "ℹ️  Generic project setup"
         mkdir -p src docs tests

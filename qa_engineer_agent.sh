@@ -154,7 +154,9 @@ report_to_pm() {
 
     /home/james/projs/Tmux-Orchestrator/send-claude-message.sh "${PM_SESSION}:0" "$report"
     log_activity "📊 Sent QA report to Project Manager"
-}main_qa_cycle() {
+}
+
+main_qa_cycle() {
     while true; do
         CYCLE_COUNT=$((CYCLE_COUNT + 1))
 
@@ -209,4 +211,5 @@ log_activity "QA Engineer starting for $PROJECT_NAME at $PROJECT_PATH"
 log_activity "Reporting to PM session: $PM_SESSION"
 
 # Start QA cycle
+main_qa_cycle
 main_qa_cycle

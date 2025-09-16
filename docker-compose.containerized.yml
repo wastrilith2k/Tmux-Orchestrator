@@ -1,0 +1,303 @@
+version: '3.8'
+
+services:
+  # Infrastructure Services
+  postgres:
+    image: postgres:15
+    container_name: tmux-orchestrator-db
+    environment:
+      POSTGRES_DB: orchestrator
+      POSTGRES_USER: orchestrator
+      POSTGRES_PASSWORD: orchestrator_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orchestrator"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: tmux-orchestrator-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api-gateway:
+    image: tiangolo/uvicorn-gunicorn-fastapi:python3.11
+    container_name: tmux-orchestrator-api
+    ports:
+      - "8080:80"
+    environment:
+      - DATABASE_URL=postgresql://orchestrator:orchestrator_pass@postgres:5432/orchestrator
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./api:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn main:app --host 0.0.0.0 --port 80 --reload
+
+  # Project Workspace Containers
+  workspace-test-todo:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.workspace
+    container_name: workspace-test-todo-app
+    volumes:
+      - test_todo_workspace:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock  # For Docker-in-Docker if needed
+    environment:
+      - PROJECT_NAME=test-todo-app
+      - PROJECT_TYPE=nodejs
+    depends_on:
+      - redis
+    networks:
+      - agent_network
+
+  workspace-ml-pipeline:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.workspace
+    container_name: workspace-ml-pipeline
+    volumes:
+      - ml_pipeline_workspace:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - PROJECT_NAME=ml-pipeline
+      - PROJECT_TYPE=python
+    depends_on:
+      - redis
+    networks:
+      - agent_network
+
+  workspace-ecommerce:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.workspace
+    container_name: workspace-ecommerce-app
+    volumes:
+      - ecommerce_workspace:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - PROJECT_NAME=ecommerce-app
+      - PROJECT_TYPE=nodejs
+    depends_on:
+      - redis
+    networks:
+      - agent_network
+
+  # Autonomous Agent Containers
+  # Test Todo App Team
+  engineer-test-todo:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.agent
+    container_name: agent-engineer-test-todo
+    environment:
+      - AGENT_TYPE=engineer
+      - PROJECT_NAME=test-todo-app
+      - PROJECT_PATH=/workspace
+      - REDIS_URL=redis://redis:6379
+      - HUB_API_URL=http://api-gateway:80
+    volumes:
+      - test_todo_workspace:/workspace
+    depends_on:
+      - redis
+      - workspace-test-todo
+    networks:
+      - agent_network
+    restart: unless-stopped
+
+  pm-test-todo:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.agent
+    container_name: agent-pm-test-todo
+    environment:
+      - AGENT_TYPE=project-manager
+      - PROJECT_NAME=test-todo-app
+      - PROJECT_PATH=/workspace
+      - REDIS_URL=redis://redis:6379
+      - HUB_API_URL=http://api-gateway:80
+    volumes:
+      - test_todo_workspace:/workspace
+    depends_on:
+      - redis
+      - workspace-test-todo
+    networks:
+      - agent_network
+    restart: unless-stopped
+
+  qa-test-todo:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.agent
+    container_name: agent-qa-test-todo
+    environment:
+      - AGENT_TYPE=qa-engineer
+      - PROJECT_NAME=test-todo-app
+      - PROJECT_PATH=/workspace
+      - REDIS_URL=redis://redis:6379
+      - HUB_API_URL=http://api-gateway:80
+    volumes:
+      - test_todo_workspace:/workspace
+    depends_on:
+      - redis
+      - workspace-test-todo
+    networks:
+      - agent_network
+    restart: unless-stopped
+
+  devops-test-todo:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.agent
+    container_name: agent-devops-test-todo
+    environment:
+      - AGENT_TYPE=devops
+      - PROJECT_NAME=test-todo-app
+      - PROJECT_PATH=/workspace
+      - REDIS_URL=redis://redis:6379
+      - HUB_API_URL=http://api-gateway:80
+    volumes:
+      - test_todo_workspace:/workspace
+    depends_on:
+      - redis
+      - workspace-test-todo
+    networks:
+      - agent_network
+    restart: unless-stopped
+
+  # ML Pipeline Team
+  engineer-ml:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.agent
+    container_name: agent-engineer-ml-pipeline
+    environment:
+      - AGENT_TYPE=engineer
+      - PROJECT_NAME=ml-pipeline
+      - PROJECT_PATH=/workspace
+      - REDIS_URL=redis://redis:6379
+      - HUB_API_URL=http://api-gateway:80
+    volumes:
+      - ml_pipeline_workspace:/workspace
+    depends_on:
+      - redis
+      - workspace-ml-pipeline
+    networks:
+      - agent_network
+    restart: unless-stopped
+
+  pm-ml:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.agent
+    container_name: agent-pm-ml-pipeline
+    environment:
+      - AGENT_TYPE=project-manager
+      - PROJECT_NAME=ml-pipeline
+      - PROJECT_PATH=/workspace
+      - REDIS_URL=redis://redis:6379
+      - HUB_API_URL=http://api-gateway:80
+    volumes:
+      - ml_pipeline_workspace:/workspace
+    depends_on:
+      - redis
+      - workspace-ml-pipeline
+    networks:
+      - agent_network
+    restart: unless-stopped
+
+  # E-commerce Team
+  engineer-ecommerce:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.agent
+    container_name: agent-engineer-ecommerce
+    environment:
+      - AGENT_TYPE=engineer
+      - PROJECT_NAME=ecommerce-app
+      - PROJECT_PATH=/workspace
+      - REDIS_URL=redis://redis:6379
+      - HUB_API_URL=http://api-gateway:80
+    volumes:
+      - ecommerce_workspace:/workspace
+    depends_on:
+      - redis
+      - workspace-ecommerce
+    networks:
+      - agent_network
+    restart: unless-stopped
+
+  pm-ecommerce:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.agent
+    container_name: agent-pm-ecommerce
+    environment:
+      - AGENT_TYPE=project-manager
+      - PROJECT_NAME=ecommerce-app
+      - PROJECT_PATH=/workspace
+      - REDIS_URL=redis://redis:6379
+      - HUB_API_URL=http://api-gateway:80
+    volumes:
+      - ecommerce_workspace:/workspace
+    depends_on:
+      - redis
+      - workspace-ecommerce
+    networks:
+      - agent_network
+    restart: unless-stopped
+
+  # Agent Orchestrator - Manages other agents
+  orchestrator:
+    build:
+      context: .
+      dockerfile: containers/Dockerfile.orchestrator
+    container_name: agent-orchestrator
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - HUB_API_URL=http://api-gateway:80
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - orchestrator_data:/data
+    depends_on:
+      - redis
+      - api-gateway
+    networks:
+      - agent_network
+    restart: unless-stopped
+
+networks:
+  agent_network:
+    driver: bridge
+    name: tmux-orchestrator-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  test_todo_workspace:
+    driver: local
+  ml_pipeline_workspace:
+    driver: local
+  ecommerce_workspace:
+    driver: local
+  orchestrator_data:
+    driver: local

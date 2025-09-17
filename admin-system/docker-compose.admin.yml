@@ -12,7 +12,7 @@ services:
       - POSTGRES_URL=postgresql://admin:${ADMIN_DB_PASSWORD:-orchestrator_pass}@postgres:5432/orchestrator_hub
       - REDIS_URL=redis://redis:6379
       - MESSAGE_BROKER_URL=redis://redis:6379
-      - API_GATEWAY_URL=http://api-gateway:8080
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
     depends_on:
       - postgres
       - redis

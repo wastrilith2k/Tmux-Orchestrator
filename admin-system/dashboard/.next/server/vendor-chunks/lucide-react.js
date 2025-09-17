@@ -151,6 +151,16 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 
 /***/ }),
 
+/***/ "(ssr)/./node_modules/lucide-react/dist/esm/icons/square.js":
+/*!************************************************************!*\
+  !*** ./node_modules/lucide-react/dist/esm/icons/square.js ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Square)\n/* harmony export */ });\n/* harmony import */ var _createLucideIcon_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../createLucideIcon.js */ \"(ssr)/./node_modules/lucide-react/dist/esm/createLucideIcon.js\");\n/**\n * lucide-react v0.288.0 - ISC\n */\n\n\n\nconst Square = (0,_createLucideIcon_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"])(\"Square\", [\n  [\n    \"rect\",\n    { width: \"18\", height: \"18\", x: \"3\", y: \"3\", rx: \"2\", key: \"afitv7\" }\n  ]\n]);\n\n\n//# sourceMappingURL=square.js.map\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHNzcikvLi9ub2RlX21vZHVsZXMvbHVjaWRlLXJlYWN0L2Rpc3QvZXNtL2ljb25zL3NxdWFyZS5qcyIsIm1hcHBpbmdzIjoiOzs7OztBQUFBO0FBQ0E7QUFDQTs7QUFFc0Q7O0FBRXRELGVBQWUsZ0VBQWdCO0FBQy9CO0FBQ0E7QUFDQSxNQUFNO0FBQ047QUFDQTs7QUFFNkI7QUFDN0IiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly90bXV4LW9yY2hlc3RyYXRvci1kYXNoYm9hcmQvLi9ub2RlX21vZHVsZXMvbHVjaWRlLXJlYWN0L2Rpc3QvZXNtL2ljb25zL3NxdWFyZS5qcz84ZDQ3Il0sInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogbHVjaWRlLXJlYWN0IHYwLjI4OC4wIC0gSVNDXG4gKi9cblxuaW1wb3J0IGNyZWF0ZUx1Y2lkZUljb24gZnJvbSAnLi4vY3JlYXRlTHVjaWRlSWNvbi5qcyc7XG5cbmNvbnN0IFNxdWFyZSA9IGNyZWF0ZUx1Y2lkZUljb24oXCJTcXVhcmVcIiwgW1xuICBbXG4gICAgXCJyZWN0XCIsXG4gICAgeyB3aWR0aDogXCIxOFwiLCBoZWlnaHQ6IFwiMThcIiwgeDogXCIzXCIsIHk6IFwiM1wiLCByeDogXCIyXCIsIGtleTogXCJhZml0djdcIiB9XG4gIF1cbl0pO1xuXG5leHBvcnQgeyBTcXVhcmUgYXMgZGVmYXVsdCB9O1xuLy8jIHNvdXJjZU1hcHBpbmdVUkw9c3F1YXJlLmpzLm1hcFxuIl0sIm5hbWVzIjpbXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///(ssr)/./node_modules/lucide-react/dist/esm/icons/square.js\n");
+
+/***/ }),
+
 /***/ "(ssr)/./node_modules/lucide-react/dist/esm/icons/trash-2.js":
 /*!*************************************************************!*\
   !*** ./node_modules/lucide-react/dist/esm/icons/trash-2.js ***!

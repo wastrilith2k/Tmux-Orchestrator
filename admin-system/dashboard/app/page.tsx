@@ -27,14 +27,14 @@ export default function Dashboard () {
   const loadDashboardData = async () => {
     try {
       // Load projects
-      const projectsResponse = await fetch(`${process.env.API_BASE_URL}/api/projects`)
+      const projectsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`)
       if (projectsResponse.ok) {
         const projectsData = await projectsResponse.json()
         setProjects(projectsData)
       }
 
       // Load system metrics
-      const metricsResponse = await fetch(`${process.env.API_BASE_URL}/api/system/status`)
+      const metricsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/system/status`)
       if (metricsResponse.ok) {
         const metricsData = await metricsResponse.json()
         setSystemMetrics(metricsData)
@@ -49,7 +49,7 @@ export default function Dashboard () {
 
   const handleCreateProject = async (projectData: any) => {
     try {
-      const response = await fetch(`${process.env.API_BASE_URL}/api/projects`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

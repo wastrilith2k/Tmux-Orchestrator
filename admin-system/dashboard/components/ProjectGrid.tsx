@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Server, Activity, AlertCircle, Clock, Play, Stop, Trash2 } from 'lucide-react'
+import { Server, Activity, AlertCircle, Clock, Play, Square, Trash2 } from 'lucide-react'
 import { Project } from '../types'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -51,8 +51,8 @@ export default function ProjectGrid ({ projects, onProjectUpdate }: ProjectGridP
 
     try {
       const endpoint = action === 'delete'
-        ? `${process.env.API_BASE_URL}/api/projects/${projectId}`
-        : `${process.env.API_BASE_URL}/api/projects/${projectId}/${action}`
+        ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}`
+        : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}/${action}`
 
       const method = action === 'delete' ? 'DELETE' : 'POST'
 
@@ -149,7 +149,7 @@ export default function ProjectGrid ({ projects, onProjectUpdate }: ProjectGridP
                   className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors disabled:opacity-50"
                   title="Stop Project"
                 >
-                  <Stop className="h-4 w-4" />
+                  <Square className="h-4 w-4" />
                 </button>
               )}
 

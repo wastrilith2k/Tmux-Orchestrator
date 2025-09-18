@@ -1,3 +1,6 @@
 node_modules
 .env
 .next
+
+admin-system/.env
+admin-system/dashboard/.next

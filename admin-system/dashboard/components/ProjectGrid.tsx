@@ -76,28 +76,44 @@ export default function ProjectGrid ({ projects, onProjectUpdate }: ProjectGridP
 
   if (projects.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 text-center">
-          <Server className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Projects Yet</h3>
-          <p className="text-gray-600 mb-4">Create your first project to get started with the orchestrator.</p>
+      <div className="bg-white rounded-xl shadow-lg border border-gray-100">
+        <div className="p-8 text-center">
+          <div className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4">
+            <Server className="h-8 w-8 text-gray-400" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Projects Yet</h3>
+          <p className="text-gray-600 mb-6">Create your first project to get started with the orchestrator.</p>
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
+            <p className="text-sm text-gray-700">
+              💡 <strong>Tip:</strong> Use the "New Project" button to create your first autonomous development project.
+            </p>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-6 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Projects</h2>
-        <p className="text-sm text-gray-600">Manage your orchestrator projects</p>
+    <div className="bg-white rounded-xl shadow-lg border border-gray-100">
+      <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Projects</h2>
+            <p className="text-sm text-gray-600 mt-1">Manage your orchestrator projects ({projects.length} total)</p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-500">
+              {projects.filter(p => p.status === 'running').length} running
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
         {projects.map((project) => (
           <div
             key={project.id}
-            className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+            className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200 hover:border-blue-300 bg-white"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center">

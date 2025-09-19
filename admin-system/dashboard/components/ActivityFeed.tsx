@@ -75,44 +75,66 @@ export default function ActivityFeed () {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-100">
-      <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50 rounded-t-xl">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100/50">
+      <div className="p-6 border-b border-gray-200/50 bg-gradient-to-r from-purple-50 to-pink-50 rounded-t-2xl">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
-            <p className="text-sm text-gray-600 mt-1">System events and notifications</p>
+            <h3 className="text-xl font-bold text-gray-900">System Activity</h3>
+            <p className="text-sm text-gray-600 mt-1">Real-time system events and notifications</p>
           </div>
-          <MessageSquare className="h-6 w-6 text-purple-600" />
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-xs font-medium text-gray-500">Live</span>
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
+              <MessageSquare className="h-4 w-4 text-white" />
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="p-6">
         {activities.length === 0 ? (
-          <div className="text-center py-8">
-            <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">No recent activity</p>
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <MessageSquare className="h-8 w-8 text-purple-400" />
+            </div>
+            <h4 className="text-lg font-medium text-gray-900 mb-2">No recent activity</h4>
+            <p className="text-gray-600">System events will appear here</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {activities.map((activity) => (
               <div
                 key={activity.id}
-                className={`p-4 rounded-lg border transition-all hover:shadow-md ${getActivityBgColor(activity.type)}`}
+                className={`p-4 rounded-xl border transition-all hover:shadow-md group ${getActivityBgColor(activity.type)}`}
               >
                 <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 mt-1">
+                  <div className="flex-shrink-0 mt-0.5">
                     {getActivityIcon(activity.type)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">
-                      {activity.message}
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
-                      {activity.details}
-                    </p>
-                    <div className="flex items-center mt-2 text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {formatTime(activity.timestamp)}
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-gray-900 leading-tight">
+                          {activity.message}
+                        </p>
+                        <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                          {activity.details}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center text-xs text-gray-500">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {formatTime(activity.timestamp)}
+                      </div>
+                      <div className={`px-2 py-1 text-xs font-medium rounded-full ${activity.type === 'success' ? 'bg-green-100 text-green-700' :
+                          activity.type === 'warning' ? 'bg-yellow-100 text-yellow-700' :
+                            activity.type === 'error' ? 'bg-red-100 text-red-700' :
+                              'bg-blue-100 text-blue-700'
+                        }`}>
+                        {activity.type}
+                      </div>
                     </div>
                   </div>
                 </div>
